@@ -37,14 +37,13 @@ class BookSpider(scrapy.Spider):
             "https://product.kyobobook.co.kr/category/KOR/59#?page=1&type=all&per=50&sort=sel"
         ]
         for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+            yield scrapy.Request(url=url, callback=self.parse_book_list)
 
-    def parse(self, response):
+    def parse_book_list(self, response):
         book_links = response.css(
             'ol.prod_list li.prod_item div.prod_area div.prod_thumb_box a.prod_link::attr(href)').extract()
         for book_link in book_links:
             yield scrapy.Request(url=book_link, callback=self.parse_book)
-
 
     def parse_book(self, response):
         title = response.css('span.prod_title::text').get()
@@ -54,12 +53,13 @@ class BookSpider(scrapy.Spider):
         description = ' '.join(response.css('div.intro_bottom div.info_text::text').extract())
 
         review_text = response.css('div.comment_text::text').extract()
+
         page_links = response.css('div.pagination a.btn_page_num')
         for page_link in page_links:
             page_url = response.urljoin(page_link.attrib['href'])
-            review_text.extend(response.follow(page_url).css('div.comment_text::text').extract())
+            yield scrapy.Request(url=page_url, callback=self.parse_review_page)
 
-        review = ' '.join(review_text)
+        print("--------title: ", title)
 
         yield {
             'title': title,
@@ -67,5 +67,9 @@ class BookSpider(scrapy.Spider):
             'author': author,
             'publisher': publisher,
             'description': description,
-            'reviews': review,
+            'reviews': ' '.join(review_text),
         }
+
+    def parse_review_page(self, response):
+        review_text = response.css('div.comment_text::text').extract()
+        yield {'reviews': ' '.join(review_text)}
