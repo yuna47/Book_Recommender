@@ -1,12 +1,15 @@
 import time
 
 import scrapy
+from scrapy.http import HtmlResponse
+from selenium import webdriver
 
 
 class BookSpider(scrapy.Spider):
     name = "books"
 
     def start_requests(self):
+        self.driver = webdriver.Chrome()
         urls = [
             "https://product.kyobobook.co.kr/category/KOR/01#?page=1&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/03#?page=1&type=all&per=50&sort=sel",
@@ -46,7 +49,7 @@ class BookSpider(scrapy.Spider):
             'a.prod_link::attr(href)').extract()
         for book_link in book_links:
             yield scrapy.Request(url=book_link, callback=self.parse_book)
-            time.sleep(1)
+            time.sleep(0.01)
 
     def parse_book(self, response):
         title = response.css('span.prod_title::text').get()
@@ -55,7 +58,16 @@ class BookSpider(scrapy.Spider):
         publisher = response.css('div.prod_info_text.publish_date a::text').get()
         description = ' '.join(response.css('div.intro_bottom div.info_text::text').extract())
 
-        review_text = response.css('div.comment_text::text').extract()
+        # time.sleep(2)
+        # review_text = response.css('div.comment_text::text').getall()
+        self.driver.get(response.url)
+        time.sleep(5)
+        body = self.driver.page_source
+        scrapy_response = HtmlResponse(url=self.driver.current_url, body=body, encoding='utf-8')
+
+        reviews = scrapy_response.css('div.comment_text::text').getall()
+
+        self.driver.quit()
 
         yield {
             'title': title,
@@ -63,7 +75,7 @@ class BookSpider(scrapy.Spider):
             'author': author,
             'publisher': publisher,
             'description': description,
-            'reviews': ' '.join(review_text),
+            'reviews': reviews,
         }
 
         page_links = response.css('div.pagination a.btn_page_num')
