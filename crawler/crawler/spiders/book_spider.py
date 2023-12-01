@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import scrapy
 
 
@@ -50,7 +48,24 @@ class BookSpider(scrapy.Spider):
 
     def parse_book(self, response):
         title = response.css('span.prod_title::text').get()
-        image = response.css('div.portrait_img_box portrait img::attr(src)').get()
+        image = response.urljoin(response.css('div.portrait_img_box portrait img::attr(src)').get())
         author = response.css('div.author a::text').get()
         publisher = response.css('div.prod_info_text publish_date a::text').get()
         description = ' '.join(response.css('div.intro_bottom div.info_text::text').extract())
+
+        review_text = response.css('div.comment_text::text').extract()
+        page_links = response.css('div.pagination a.btn_page_num')
+        for page_link in page_links:
+            page_url = response.urljoin(page_link.attrib['href'])
+            review_text.extend(response.follow(page_url).css('div.comment_text::text').extract())
+
+        review = ' '.join(review_text)
+
+        yield {
+            'title': title,
+            'image': image,
+            'author': author,
+            'publisher': publisher,
+            'description': description,
+            'reviews': review,
+        }
