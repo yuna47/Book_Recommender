@@ -1,8 +1,10 @@
 import time
 
 import scrapy
-from scrapy.http import HtmlResponse
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class BookSpider(scrapy.Spider):
@@ -13,32 +15,32 @@ class BookSpider(scrapy.Spider):
         urls = [
             "https://product.kyobobook.co.kr/category/KOR/01#?page=1&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/03#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/05#?page=1&type=best&per=50",
-            # "https://product.kyobobook.co.kr/category/KOR/07#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/08#?page=1&type=best&per=50",
-            # "https://product.kyobobook.co.kr/category/KOR/09#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/11#?page=1&type=best&per=50",
-            # "https://product.kyobobook.co.kr/category/KOR/13#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/15#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/17#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/19#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/21#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/23#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/25#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/26#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/27#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/29#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/31#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/32#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/33#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/35#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/38#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/39#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/41#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/42#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/47#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/50#?page=1&type=all&per=50&sort=sel",
-            # "https://product.kyobobook.co.kr/category/KOR/53#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/05#?page=1&type=best&per=50",
+            "https://product.kyobobook.co.kr/category/KOR/07#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/08#?page=1&type=best&per=50",
+            "https://product.kyobobook.co.kr/category/KOR/09#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/11#?page=1&type=best&per=50",
+            "https://product.kyobobook.co.kr/category/KOR/13#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/15#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/17#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/19#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/21#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/23#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/25#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/26#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/27#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/29#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/31#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/32#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/33#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/35#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/38#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/39#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/41#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/42#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/47#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/50#?page=1&type=all&per=50&sort=sel",
+            "https://product.kyobobook.co.kr/category/KOR/53#?page=1&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/59#?page=1&type=all&per=50&sort=sel"
         ]
         for url in urls:
@@ -52,20 +54,28 @@ class BookSpider(scrapy.Spider):
             time.sleep(0.01)
 
     def parse_book(self, response):
+        self.driver = webdriver.Chrome()
+
         title = response.css('span.prod_title::text').get()
         image = response.urljoin(response.css('div.portrait_img_box img::attr(src)').get())
         author = response.css('div.author a::text').get()
         publisher = response.css('div.prod_info_text.publish_date a::text').get()
         description = ' '.join(response.css('div.intro_bottom div.info_text::text').extract())
 
-        # time.sleep(2)
-        # review_text = response.css('div.comment_text::text').getall()
         self.driver.get(response.url)
-        time.sleep(5)
-        body = self.driver.page_source
-        scrapy_response = HtmlResponse(url=self.driver.current_url, body=body, encoding='utf-8')
 
-        reviews = scrapy_response.css('div.comment_text::text').getall()
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'comment_item'))
+        )
+
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        reviews = self.driver.execute_script("""
+                    var reviews = document.querySelectorAll('div.comment_text');
+                    return Array.from(reviews, function(review) {
+                        return review.textContent.trim();
+                    });
+                """)
 
         self.driver.quit()
 
@@ -75,14 +85,14 @@ class BookSpider(scrapy.Spider):
             'author': author,
             'publisher': publisher,
             'description': description,
-            'reviews': reviews,
+            'reviews': ' '.join(reviews),
         }
 
-        page_links = response.css('div.pagination a.btn_page_num')
-        for page_link in page_links:
-            page_url = response.urljoin(page_link.attrib['href'])
-            yield scrapy.Request(url=page_url, callback=self.parse_review_page)
-
-    def parse_review_page(self, response):
-        review_text = response.css('div.comment_text::text').extract()
-        yield {'reviews': ' '.join(review_text)}
+    #     page_links = response.css('div.pagination a.btn_page_num')
+    #     for page_link in page_links:
+    #         page_url = response.urljoin(page_link.attrib['href'])
+    #         yield scrapy.Request(url=page_url, callback=self.parse_review_page)
+    #
+    # def parse_review_page(self, response):
+    #     review_text = response.css('div.comment_text::text').extract()
+    #     yield {'reviews': ' '.join(review_text)}
