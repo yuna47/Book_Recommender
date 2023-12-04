@@ -15,10 +15,10 @@ class BookSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            "https://product.kyobobook.co.kr/category/KOR/01#?page=2&type=all&per=50&sort=sel",
-            "https://product.kyobobook.co.kr/category/KOR/03#?page=2&type=all&per=50&sort=sel",
-            "https://product.kyobobook.co.kr/category/KOR/07#?page=2&type=all&per=50&sort=sel",
-            "https://product.kyobobook.co.kr/category/KOR/09#?page=2&type=all&per=50&sort=sel",
+            # "https://product.kyobobook.co.kr/category/KOR/01#?page=2&type=all&per=50&sort=sel",
+            # "https://product.kyobobook.co.kr/category/KOR/03#?page=2&type=all&per=50&sort=sel",
+            # "https://product.kyobobook.co.kr/category/KOR/07#?page=2&type=all&per=50&sort=sel",
+            # "https://product.kyobobook.co.kr/category/KOR/09#?page=2&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/13#?page=2&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/15#?page=2&type=all&per=50&sort=sel",
             "https://product.kyobobook.co.kr/category/KOR/17#?page=2&type=all&per=50&sort=sel",
