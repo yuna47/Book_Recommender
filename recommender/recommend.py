@@ -22,12 +22,37 @@ books["description"] = books["description"].apply(sub_special)
 books["review"] = books["review"].apply(sub_special)
 books["description"] = books["description"].apply(tokenize)
 
-description_tfidf_matrix = tfidf.fit_transform(books["description"])
-review_tfidf_matrix = tfidf.fit_transform(books["review"])
-print("description")
-print(description_tfidf_matrix.shape)
-print()
-print("review")
-print(review_tfidf_matrix.shape)
+books["content"] = books["title"] + " " + books["author"] + " " + books["publisher"] + " " + books[
+    "description"] + " " + books["review"]
 
-cosine_sim = linear_kernel(description_tfidf_matrix, review_tfidf_matrix)
+tfidf_matrix = tfidf.fit_transform(books["content"])
+print("tf-idf")
+print(tfidf_matrix.shape)
+
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+indices = pd.Series(books.index, index=books['title']).drop_duplicates()
+print(indices.head())
+
+
+def recommend(title, cosine_sim=cosine_sim):
+    recomm = []
+    idx = indices[title]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+    sim_scores = sim_scores[1:11]
+    print("sim_scores", sim_scores)
+
+    movie_indices = [i[0] for i in sim_scores]
+    print("m_i", movie_indices)
+
+    for i in range(10):
+        recomm.append(books['title'][movie_indices[i]])
+
+    print('< 도서 추천 >')
+    for i in range(10):
+        print(str(i + 1) + '순위 : ' + recomm[i])
+
+
+recommend('황금종이 1')
