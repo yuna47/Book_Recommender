@@ -1,13 +1,9 @@
 # Book_Recommender
 
-- Install
-
-
-    pip install Scrapy
-
 
 
 - Crawling
 
 
+    cd crawler
     scrapy crawl books -o books.csv
